@@ -33,7 +33,7 @@ The purpose of this repo is to assist in creating a private registry running on 
 
 # Instructions
 1. ssh into the infrastructure node as root (e.g. ssh root@api.slavers.cp.fyre.ibm.com)
-2. yum install -y git unzip podman
+2. yum install -y git unzip podman httpd-tools jq
 3. cd
 4. rm -rf private_registry
 5. rm -f main.zip
