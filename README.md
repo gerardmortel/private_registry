@@ -1,4 +1,4 @@
-# Install IBM Cloud Pak for Business Automation on OpenShift on Fyre
+# Install a private registry on OpenShift on Fyre
 # https://github.com/gerardmortel/private_registry
 
 # Resources used to create this
