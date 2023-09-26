@@ -40,6 +40,6 @@ The purpose of this repo is to assist in creating a private registry running on 
 6. curl -L https://github.com/gerardmortel/private_registry/archive/refs/heads/main.zip -o main.zip
 7. unzip main.zip
 8. rm -f main.zip
-9. cd private_registry
+9. cd private_registry-main
 10. STOP! Put your values for ALL VARIABLES inside file 02_setup_env.sh
 11. ./01_driver.sh
