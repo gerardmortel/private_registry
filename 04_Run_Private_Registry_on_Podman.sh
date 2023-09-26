@@ -6,9 +6,6 @@
 # How to implement a simple personal/private Linux container image registry for internal use
 # https://www.redhat.com/sysadmin/simple-container-registry
 
-echo "#### Install podman httpd-tools and jq"
-sudo yum install -y podman httpd-tools jq
-
 echo "#### Make registry directory to hold images, auth to hold credentials and certs to hold certs"
 # rm -rf /opt/registry/{auth,certs,data}
 # mkdir -p /opt/registry/{auth,certs,data}
@@ -48,6 +45,7 @@ docker.io/library/registry:latest
 echo "#### If a firewall is running on the hosts, the exposed port (5000) will need to be permitted."
 systemctl status firewalld
 systemctl start firewalld
+systemctl status firewalld
 firewall-cmd --add-port=5000/tcp --zone=internal --permanent
 firewall-cmd --add-port=5000/tcp --zone=public --permanent
 firewall-cmd --reload
