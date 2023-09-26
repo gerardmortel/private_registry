@@ -35,7 +35,7 @@ The purpose of this repo is to assist in creating a private registry running on 
 1. ssh into the infrastructure node as root (e.g. ssh root@api.slavers.cp.fyre.ibm.com)
 2. yum install -y git unzip podman httpd-tools jq
 3. cd
-4. rm -rf private_registry
+4. rm -rf private_registry-main
 5. rm -f main.zip
 6. curl -L https://github.com/gerardmortel/private_registry/archive/refs/heads/main.zip -o main.zip
 7. unzip main.zip
