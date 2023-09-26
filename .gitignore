@@ -1,0 +1,12 @@
+# ignore source binaries
+*.tgz
+*.tgz.*
+*.gz
+#*.tar
+*.zip
+# ignore .project file
+.project
+# try to ignore jar files
+#*.jar
+# ignore files that begin with new.  We create those files
+new*
