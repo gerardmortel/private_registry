@@ -13,16 +13,14 @@ curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OCP_VERSION}
 echo "#### Untar oc tar"
 tar -xzvf openshift-client-linux-${OCP_VERSION}.tar.gz
 
-echo "#### Move oc to $HOME/bin"
-cd
-mkdir $HOME/bin
-mv oc $HOME/bin/
-chmod +x $HOME/bin/oc
+echo "#### Move oc to /usr/local/bin"
+mv oc /usr/local/bin/
+chmod +x /usr/local/bin/oc
 oc version
 
-echo "#### Move kubectl to $HOME/bin"
-mv kubectl $HOME/bin/
-chmod +x $HOME/bin/kubectl
+echo "#### Move kubectl to /usr/local/bin"
+mv kubectl /usr/local/bin/
+chmod +x /usr/local/bin/kubectl
 kubectl version
 
 echo "#### Install Podman on an RHEL machine. For more information, see Podman installation instructions."
@@ -34,8 +32,8 @@ curl -L https://github.com/IBM/ibm-pak/releases/download/v1.10.0/oc-ibm_pak-linu
 echo "#### Untar IBM Catalog Management Plug-in"
 tar -zxvf oc-ibm_pak-linux-amd64.tar.gz
 
-echo "#### Move oc-ibmpak to $HOME/bin"
-mv oc-ibm_pak-linux-amd64 $HOME/bin/oc-ibm_pak
+echo "#### Move oc-ibmpak to /usr/local/bin"
+mv oc-ibm_pak-linux-amd64 /usr/local/bin/oc-ibm_pak
 oc-ibm_pak --version
 
 # Make sure that the following network ports are available on the host.
