@@ -84,7 +84,9 @@ curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https:
 
 echo "#### Verify the certificate"
 # openssl s_client -connect ${HOSTNAME}:5000 -servername <servername>
-openssl s_client -connect ${HOSTNAME}:5000 -servername ${HOSTNAME}
+openssl s_client -connect ${HOSTNAME}:5000 -servername ${HOSTNAME} <<END
+
+END
 
 # To stop registry
 # podman container stop registry
