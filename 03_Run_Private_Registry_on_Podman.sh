@@ -45,6 +45,9 @@ podman run --name registry \
 -d \
 docker.io/library/registry:latest
 
+echo "#### Sleep 10 seconds to let the registry container start"
+sleep 10
+
 echo "#### If a firewall is running on the hosts, the exposed port (5000) will need to be permitted."
 systemctl status firewalld
 systemctl start firewalld
@@ -52,9 +55,6 @@ systemctl status firewalld
 firewall-cmd --add-port=5000/tcp --zone=internal --permanent
 firewall-cmd --add-port=5000/tcp --zone=public --permanent
 firewall-cmd --reload
-
-#echo "### Sleeping for 10 seconds to let things calm down"
-#sleep 10s
 
 echo "#### Test it.  Login to your private registry, pull an image, tag it and push it to the private registry."
 podman login -u ${PRIVATE_REGISTRY_USERNAME} -p ${PRIVATE_REGISTRY_PASSWORD} $HOSTNAME:5000

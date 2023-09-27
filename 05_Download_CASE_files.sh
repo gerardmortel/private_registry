@@ -23,7 +23,7 @@ echo "#### Get the cp4ba-case-to-be-mirrored-23.0.1.txt file, or an interim fix,
 curl -L https://www.ibm.com/support/pages/system/files/inline-files/cp4ba-case-to-be-mirrored-23.0.1-IF002.txt -o cp4ba-case-to-be-mirrored_23.0.1.yaml
 
 echo "#### Download of the CASE files"
-oc ibm-pak get -c file:///root/cp4ba-case-to-be-mirrored_23.0.1.yaml
+oc ibm-pak get -c file:///root/private_registry-main/cp4ba-case-to-be-mirrored_23.0.1.yaml
 
 echo "#### List the versions of all the downloaded CASE files."
 oc ibm-pak list --downloaded
