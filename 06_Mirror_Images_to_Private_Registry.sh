@@ -37,11 +37,17 @@ nohup oc image mirror -f /root/.ibm-pak/data/mirror/ibm-cp-automation/5.0.2/imag
 echo "#### List the tags for the navigator image"
 curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/cp/cp4a/ban/navigator-sso/tags/list | grep name | jq
 
+echo "#### Login to the OpenShift cluster"
+oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS} --insecure-skip-tls-verify
+
 echo "#### Run the following command to create ImageContentsourcePolicy."
 oc apply -f ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-content-source-policy.yaml
 
 echo "#### Verify your cluster node status."
-# oc get MachineConfigPool -w
+oc get MachineConfigPool -w &
+
+echo "#### Sleep for 60 seconds"
+sleep 60
 
 echo "#### Create a project for the CASE commands (cp4ba is an example)"
 # Note: Before you run the command in this step, you must be logged in to your OpenShift cluster.

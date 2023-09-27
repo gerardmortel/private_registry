@@ -6,6 +6,9 @@
 #####                                                                                 #####
 ###########################################################################################
 
+echo "#### Login to the OpenShift cluster"
+oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS} --insecure-skip-tls-verify
+
 echo "#### Configure a secure registry"
 echo "#### Load the domain.crt in a configmap"
 rm -f /certs/ca.crt
@@ -23,9 +26,14 @@ ${PATCH} --type='merge'
 
 echo "#### Get existing pull secret"
 oc get secrets pull-secret -n openshift-config -o template='{{index .data ".dockerconfigjson"}}' | base64 -d > pull-secret.json
+
+echo "#### Format the pull secret nicely"
 cat pull-secret.json | jq > pull-secret-v2.json
 
-echo "#### Create the private registry json"
+echo "#### Delete the last 3 lines"
+head -n -3 pull-secret-v2.json > pull-secret-v3.json
+
+echo "#### Create the private registry credentials to put into the pull secret"
 cat <<EOF > registry-secret.json
     },
     "${HOSTNAME}:5000": {
@@ -36,23 +44,14 @@ cat <<EOF > registry-secret.json
 }
 EOF
 
-echo "#### This is a manual step.  Replace the last 3 curly braces with our new secret data."
-echo "#### The remaining commands must be run manually."
-# echo <<EOF > private_registry_credentials
-#     },
-#     "${HOSTNAME}:5000": {
-#       "auth": "YWRtaW46UGFzc3cwcmQ=",
-#       "email": "registry@redhat.com"
-#     }
-#   }
-# }
-# EOF
+echo "#### Add the registry-secret.json to the end of the pull secret"
+cat pull-secret-v3.json registry-secret.json > pull-secret-v4.json
 
-# To Do: Automate the above substitution.  Still not working, still a manual step.
+# echo "#### Replace the last 3 lines, curly braces, of the pull secret with the contents of the registry-secret.json"
 # sed -r "s/\}\n *\}\n\}//g" pull-secret-v2.json > pull-secret-v3.json
 
-#echo "#### Reformat json and verify json is well formatted"j
-#cat pull-secret-v2.json | jq > pull-secret-v3.json
+echo "#### Reformat json and verify json is well formatted"j
+cat pull-secret-v4.json | jq > pull-secret-v5.json
 
-# Update the pull secret
-#oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=./pull-secret-v3.json
+Update the pull secret
+oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=./pull-secret-v3.json

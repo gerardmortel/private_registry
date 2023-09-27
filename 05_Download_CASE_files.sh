@@ -10,9 +10,6 @@
 echo "#### View the current config of the IBM Catalog Management Plug-in (ibm-pak) v1.6 and later"
 oc ibm-pak config
 
-echo "#### Login to the OpenShift cluster"
-oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS} --insecure-skip-tls-verify
-
 echo "#### Configure a repository that downloads the CASE files from the cp.icr.io registry"
 oc ibm-pak config repo 'IBM Cloud-Pak OCI registry' -r oci:cp.icr.io/cpopen --enable
 
