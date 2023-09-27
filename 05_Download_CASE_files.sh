@@ -22,8 +22,34 @@ oc ibm-pak list
 echo "#### Get the cp4ba-case-to-be-mirrored-23.0.1.txt file, or an interim fix, from the Cloud Pak for Business Automation CASE images technote, and rename the file to cp4ba-case-to-be-mirrored_23.0.1.yaml."
 curl -L https://www.ibm.com/support/pages/system/files/inline-files/cp4ba-case-to-be-mirrored-23.0.1-IF002.txt -o cp4ba-case-to-be-mirrored_23.0.1.yaml
 
+echo "#### Check cp4ba-case-to-be-mirrored_23.0.1.yaml is correct"
+while [ true ]
+do
+  grep "ibm-licensing" cp4ba-case-to-be-mirrored_23.0.1.yaml
+  if [ $? -eq 0 ]; then
+    echo "#### cp4ba-case-to-be-mirrored_23.0.1.yaml download successful"
+    break
+  else
+    echo "#### dcp4ba-case-to-be-mirrored_23.0.1.yaml download FAILED"
+    echo "#### Sleeping for 10 seconds"
+    sleep 10
+  fi
+done
+
 echo "#### Download of the CASE files"
 oc ibm-pak get -c file:///root/private_registry-main/cp4ba-case-to-be-mirrored_23.0.1.yaml
 
 echo "#### List the versions of all the downloaded CASE files."
-oc ibm-pak list --downloaded
+echo "#### Check that download list contains something"
+while [ true ]
+do
+  oc ibm-pak list --downloaded | grep "ibm-cp-automation"
+  if [ $? -eq 0 ]; then
+    echo "#### cp4ba-case-to-be-mirrored_23.0.1.yaml download successful"
+    break
+  else
+    echo "#### dcp4ba-case-to-be-mirrored_23.0.1.yaml download FAILED"
+    echo "#### Sleeping for 10 seconds"
+    sleep 10
+  fi
+done
