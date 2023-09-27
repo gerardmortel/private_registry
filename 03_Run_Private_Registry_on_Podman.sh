@@ -10,6 +10,17 @@
 # How to implement a simple personal/private Linux container image registry for internal use
 # https://www.redhat.com/sysadmin/simple-container-registry
 
+echo "#### If a firewall is running on the hosts, the exposed port (5000) will need to be permitted."
+systemctl status firewalld
+systemctl start firewalld
+systemctl status firewalld
+firewall-cmd --add-port=5000/tcp --zone=internal --permanent
+firewall-cmd --add-port=5000/tcp --zone=public --permanent
+firewall-cmd --reload
+
+echo "#### Sleep 120 seconds to let the firewall reload work"
+sleep 120
+
 echo "#### Make registry directory to hold images, auth to hold credentials and certs to hold certs"
 # rm -rf /opt/registry/{auth,certs,data}
 # mkdir -p /opt/registry/{auth,certs,data}
@@ -49,21 +60,10 @@ podman run --name registry \
 -d \
 docker.io/library/registry:latest
 
-echo "#### Sleep 10 seconds to let the registry container start"
-sleep 10
-
-echo "#### If a firewall is running on the hosts, the exposed port (5000) will need to be permitted."
-systemctl status firewalld
-systemctl start firewalld
-systemctl status firewalld
-firewall-cmd --add-port=5000/tcp --zone=internal --permanent
-firewall-cmd --add-port=5000/tcp --zone=public --permanent
-firewall-cmd --reload
-
 echo "#### Test it.  Login to your private registry, pull an image, tag it and push it to the private registry."
-podman login -u ${PRIVATE_REGISTRY_USERNAME} -p ${PRIVATE_REGISTRY_PASSWORD} $HOSTNAME:5000
 podman pull ubuntu
 podman tag ubuntu $HOSTNAME:5000/ubuntu
+podman login -u ${PRIVATE_REGISTRY_USERNAME} -p ${PRIVATE_REGISTRY_PASSWORD} $HOSTNAME:5000
 podman push $HOSTNAME:5000/ubuntu
 
 echo "#### If you installed jq (yum install -q jq), display the repositories nicely"
