@@ -27,6 +27,9 @@ rm -f /etc/pki/ca-trust/source/anchors/$HOSTNAME.crt
 cp /certs/domain.crt /etc/pki/ca-trust/source/anchors/$HOSTNAME.crt
 update-ca-trust
 
+echo "#### Login to docker to create /run/user/0/containers/auth.json"
+podman login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} docker.io
+
 echo "#### Run the registry container.  Note: On RHEL 9.2, needed to put all directories off of root "/".  Could not use /opt/registry"
 podman run --name registry \
 -p 5000:5000 \
