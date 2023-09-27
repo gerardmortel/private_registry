@@ -2,23 +2,23 @@
 # https://github.com/gerardmortel/private_registry
 
 # Resources used to create this
-# Red Hat OpenShift: How to create and integrate a private registry with stronger security capabilities
-# https://www.redhat.com/en/blog/openshift-private-registry
+Red Hat OpenShift: How to create and integrate a private registry with stronger security capabilities
+https://www.redhat.com/en/blog/openshift-private-registry
 
-# How to implement a simple personal/private Linux container image registry for internal use
-# https://www.redhat.com/sysadmin/simple-container-registry
+How to implement a simple personal/private Linux container image registry for internal use
+https://www.redhat.com/sysadmin/simple-container-registry
 
-# Using image pull secrets
-# https://docs.openshift.com/container-platform/4.13/openshift_images/managing_images/using-image-pull-secrets.html
+Using image pull secrets
+https://docs.openshift.com/container-platform/4.13/openshift_images/managing_images/using-image-pull-secrets.html
 
-# Image configuration resources
-# https://docs.openshift.com/container-platform/4.12/openshift_images/image-configuration.html
+Image configuration resources
+https://docs.openshift.com/container-platform/4.12/openshift_images/image-configuration.html
 
-# Important firewall changes for customers pulling container images
-# https://access.redhat.com/announcements/7000333
+Important firewall changes for customers pulling container images
+https://access.redhat.com/announcements/7000333
 
-# Operator installation or upgrade fails with DeadlineExceeded error
-# https://www.ibm.com/docs/en/cloud-paks/foundational-services/4.2?topic=issues-operator-installation-upgrade-fails-deadlineexceeded-error
+Operator installation or upgrade fails with DeadlineExceeded error
+https://www.ibm.com/docs/en/cloud-paks/foundational-services/4.2?topic=issues-operator-installation-upgrade-fails-deadlineexceeded-error
 
 # Purpose
 The purpose of this repo is to assist in creating a private registry running on podman on RHEL 9.1
