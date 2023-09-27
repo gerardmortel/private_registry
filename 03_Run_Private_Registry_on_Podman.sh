@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# Setting up the private image registry on RHEL 9.2
+#####################################################################
+#####                                                           #####
+#####     Setting up the private image registry on RHEL 9.2     #####
+#####                                                           #####
+#####################################################################
 
 # Resources
 # How to implement a simple personal/private Linux container image registry for internal use
