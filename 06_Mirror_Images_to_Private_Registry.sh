@@ -24,7 +24,7 @@ echo "#### Login to the IBM Container Registry"
 podman login -u ${ICR_USERNAME} -p ${API_KEY_GENERATED} cp.icr.io
 
 echo "#### Login to ${TARGET_REGISTRY}"
-podman login -u ${PODMAN_USERNAME} -p ${PODMAN_PASSWORD} ${TARGET_REGISTRY}
+podman login -u ${PRIVATE_REGISTRY_USERNAME} -p ${PRIVATE_REGISTRY_PASSWORD} ${TARGET_REGISTRY}
 
 echo "#### Mirror the images"
 nohup oc image mirror -f /root/.ibm-pak/data/mirror/ibm-cp-automation/5.0.2/images-mapping.txt \
@@ -35,7 +35,7 @@ nohup oc image mirror -f /root/.ibm-pak/data/mirror/ibm-cp-automation/5.0.2/imag
 --max-per-registry=1 | tee mirror.log
 
 echo "#### List the tags for the navigator image"
-curl -ik --user ${PODMAN_USERNAME}:${PODMAN_PASSWORD} https://${HOSTNAME}:5000/v2/cp/cp4a/ban/navigator-sso/tags/list | grep name | jq
+curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/cp/cp4a/ban/navigator-sso/tags/list | grep name | jq
 
 echo "#### Run the following command to create ImageContentsourcePolicy."
 oc apply -f ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-content-source-policy.yaml
