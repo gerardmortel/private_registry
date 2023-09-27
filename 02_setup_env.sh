@@ -17,4 +17,3 @@ export CP4BANAMESPACE=""
 export CLUSTER_USER=""
 export CLUSTER_PASS=""
 export CLUSTER_URL=""
-oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS}
