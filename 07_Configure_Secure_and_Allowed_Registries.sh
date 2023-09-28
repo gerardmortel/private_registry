@@ -20,7 +20,68 @@ echo "#### Patch the OpenShift cluster to trust the podman private registry"
 oc patch image.config.openshift.io/cluster --patch '{"spec":{"additionalTrustedCA":{"name":"registry-config"}}}' --type=merge
 
 echo "#### Patch the OpenShift cluster to only use certain registries"
-PATCH="{"spec":{"allowedRegistriesForImport":[{"domainName":"${HOSTNAME}:5000","insecure":false},{"domainName":"image-registry.openshift-image-registry.svc:5000","insecure":false},{"domainName":"quay.io","insecure":false},{"domainName":"cdn.quay.io","insecure":false},{"domainName":"cdn01.quay.io","insecure":false},{"domainName":"cdn02.quay.io","insecure":false},{"domainName":"cdn03.quay.io","insecure":false},{"domainName":"registry.redhat.io","insecure":false},{"domainName":"k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:4.0.2","insecure":false}],"registrySources":{"allowedRegistries":["${HOSTNAME}:5000","image-registry.openshift-image-registry.svc:5000","quay.io","cdn.quay.io","cdn01.quay.io","cdn02.quay.io","cdn03.quay.io","registry.redhat.io","k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:4.0.2"]}}}"
+cat <<EOF > cluster1.json
+{
+  "spec": {
+    "allowedRegistriesForImport": [
+      {
+        "domainName": "${HOSTNAME}:5000",
+        "insecure": false
+      },
+      {
+        "domainName": "image-registry.openshift-image-registry.svc:5000",
+        "insecure": false
+      },
+      {
+        "domainName": "quay.io",
+        "insecure": false
+      },
+      {
+        "domainName": "cdn.quay.io",
+        "insecure": false
+      },
+      {
+        "domainName": "cdn01.quay.io",
+        "insecure": false
+      },
+      {
+        "domainName": "cdn02.quay.io",
+        "insecure": false
+      },
+      {
+        "domainName": "cdn03.quay.io",
+        "insecure": false
+      },
+      {
+        "domainName": "registry.redhat.io",
+        "insecure": false
+      },
+      {
+        "domainName": "k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2",
+        "insecure": false
+      }
+    ],
+    "registrySources": {
+      "allowedRegistries": [
+        "${HOSTNAME}:5000",
+        "image-registry.openshift-image-registry.svc:5000",
+        "quay.io",
+        "cdn.quay.io",
+        "cdn01.quay.io",
+        "cdn02.quay.io",
+        "cdn03.quay.io",
+        "registry.redhat.io",
+        "k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2"
+      ]
+    }
+  }
+}
+EOF
+
+echo "#### Compact json"
+cat cluster1.json | jq -c > cluster2.json
+PATCH=$(cat cluster2.json)
+
 oc patch image.config.openshift.io/cluster -p \
 ${PATCH} --type='merge'
 
@@ -47,11 +108,11 @@ EOF
 echo "#### Add the registry-secret.json to the end of the pull secret"
 cat pull-secret-v3.json registry-secret.json > pull-secret-v4.json
 
-# echo "#### Replace the last 3 lines, curly braces, of the pull secret with the contents of the registry-secret.json"
-# sed -r "s/\}\n *\}\n\}//g" pull-secret-v2.json > pull-secret-v3.json
-
-echo "#### Reformat json and verify json is well formatted"j
+echo "#### Reformat json and verify json is well formatted"
 cat pull-secret-v4.json | jq > pull-secret-v5.json
 
-Update the pull secret
-oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=./pull-secret-v3.json
+echo "#### Update the pull secret."
+oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=./pull-secret-v5.json
+
+#### jq -c
+# {"spec":{"allowedRegistriesForImport":[{"domainName":"smelting1.fyre.ibm.com:5000","insecure":false},{"domainName":"image-registry.openshift-image-registry.svc:5000","insecure":false},{"domainName":"quay.io","insecure":false},{"domainName":"cdn.quay.io","insecure":false},{"domainName":"cdn01.quay.io","insecure":false},{"domainName":"cdn02.quay.io","insecure":false},{"domainName":"cdn03.quay.io","insecure":false},{"domainName":"registry.redhat.io","insecure":false},{"domainName":"k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2","insecure":false}],"registrySources":{"allowedRegistries":["smelting1.fyre.ibm.com:5000","image-registry.openshift-image-registry.svc:5000","quay.io","cdn.quay.io","cdn01.quay.io","cdn02.quay.io","cdn03.quay.io","registry.redhat.io","k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2"]}}}

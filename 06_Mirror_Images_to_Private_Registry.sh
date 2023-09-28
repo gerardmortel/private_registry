@@ -11,8 +11,12 @@
 echo "#### Generate mirror manifests to be used when mirroring the image to the target registry."
 echo "#### The TARGET_REGISTRY refers to the registry where the images are mirrored to and accessed by the OCP cluster."
 echo "#### TARGET_REGISTRY=${TARGET_REGISTRY}" 
+# oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY \
+#   --version $CASE_VERSION
+
 oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY \
-  --version $CASE_VERSION
+  --version $CASE_VERSION \
+  --filter ibmcp4baProd,ibmcp4baODMImages,ibmcp4baBASImages,ibmcp4baAAEImages,ibmEdbStandard
 
 echo "#### list all the images in your mirror manifest and the publicly accessible registries from where the images are pulled from."
 oc ibm-pak describe $CASE_NAME \
@@ -34,7 +38,7 @@ nohup oc image mirror -f /root/.ibm-pak/data/mirror/ibm-cp-automation/5.0.2/imag
 --skip-multiple-scopes \
 --max-per-registry=1 | tee mirror.log
 
-echo "#### List the tags for the navigator image"
+echo "#### Test listing the tags for the navigator image"
 curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/cp/cp4a/ban/navigator-sso/tags/list | grep name | jq
 
 echo "#### Login to the OpenShift cluster"
@@ -43,11 +47,22 @@ oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS} --
 echo "#### Run the following command to create ImageContentsourcePolicy."
 oc apply -f ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-content-source-policy.yaml
 
-echo "#### Verify your cluster node status."
-oc get MachineConfigPool -w &
 
-echo "#### Sleep for 60 seconds"
-sleep 60
+echo "#### Check the number of updated machines equals ${NUM_OF_MACHINES}"
+NUM_OF_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | wc -l)
+NUM_OF_UPDATED_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | awk '{ print $3 }' | grep "True" | wc -l)
+#NUM_OF_UPDATING_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | awk '{ print $4 }' | grep "True" | wc -l)
+while [ true ]
+do
+  NUM_OF_UPDATED_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | awk '{ print $3 }' | grep "True" | wc -l)
+  if [[ ${NUM_OF_UPDATED_MACHINES} -eq ${NUM_OF_MACHINES} ]]; then
+    echo "#### Yes, the update is done."
+    break
+  else
+    echo "#### No, the update is not done so sleep for 10 seconds"
+    sleep 10
+  fi
+done
 
 echo "#### Create a project for the CASE commands (cp4ba is an example)"
 # Note: Before you run the command in this step, you must be logged in to your OpenShift cluster.
