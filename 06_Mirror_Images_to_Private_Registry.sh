@@ -13,7 +13,6 @@ echo "#### The TARGET_REGISTRY refers to the registry where the images are mirro
 echo "#### TARGET_REGISTRY=${TARGET_REGISTRY}" 
 # oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY \
 #   --version $CASE_VERSION
-
 oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY \
   --version $CASE_VERSION \
   --filter ibmcp4baProd,ibmcp4baODMImages,ibmcp4baBASImages,ibmcp4baAAEImages,ibmEdbStandard
@@ -30,13 +29,26 @@ podman login -u ${ICR_USERNAME} -p ${API_KEY_GENERATED} cp.icr.io
 echo "#### Login to ${TARGET_REGISTRY}"
 podman login -u ${PRIVATE_REGISTRY_USERNAME} -p ${PRIVATE_REGISTRY_PASSWORD} ${TARGET_REGISTRY}
 
-echo "#### Mirror the images"
-nohup oc image mirror -f /root/.ibm-pak/data/mirror/ibm-cp-automation/5.0.2/images-mapping.txt \
---filter-by-os '.*' \
--a $REGISTRY_AUTH_FILE \
---insecure \
---skip-multiple-scopes \
---max-per-registry=1 | tee mirror.log
+echo "#### Mirror the images until no errors appear in the logs"
+i=1
+j=0
+while [ true ]
+do
+  nohup oc image mirror -f /root/.ibm-pak/data/mirror/ibm-cp-automation/5.0.2/images-mapping.txt \
+  --filter-by-os '.*' \
+  -a $REGISTRY_AUTH_FILE \
+  --insecure \
+  --skip-multiple-scopes \
+  --max-per-registry=1 | tee mirror${i}.log
+  j=$(grep "error" mirror${i}.log|wc -l)
+  if [ ${j} -gt 0 ]; then
+    echo "#### Mirror images FAILED.  Invoking mirror image command again."
+    ((i=i+1))
+  else
+    echo "#### Mirror images SUCCEEDED"
+    break
+  fi
+done
 
 echo "#### Test listing the tags for the navigator image"
 curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/cp/cp4a/ban/navigator-sso/tags/list | grep name | jq
@@ -46,7 +58,6 @@ oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS} --
 
 echo "#### Run the following command to create ImageContentsourcePolicy."
 oc apply -f ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-content-source-policy.yaml
-
 
 echo "#### Check the number of updated machines equals ${NUM_OF_MACHINES}"
 NUM_OF_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | wc -l)
