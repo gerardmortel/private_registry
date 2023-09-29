@@ -7,32 +7,32 @@
 ####################################################################
 # https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.1?topic=deployment-setting-up-host-mirror-images-private-registry
 
-echo "#### Install the oc OCP CLI tool. For more information, see OCP CLI tools."
+echo "#### 1. Install the oc OCP CLI tool. For more information, see OCP CLI tools."
 curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OCP_VERSION}/openshift-client-linux-${OCP_VERSION}.tar.gz -o openshift-client-linux-${OCP_VERSION}.tar.gz
 
-echo "#### Untar oc tar"
+echo "#### 1a. Untar oc tar"
 tar -xzvf openshift-client-linux-${OCP_VERSION}.tar.gz
 
-echo "#### Move oc to /usr/local/bin"
+echo "#### 1b. Move oc to /usr/local/bin"
 mv oc /usr/local/bin/
 chmod +x /usr/local/bin/oc
 oc version
 
-echo "#### Move kubectl to /usr/local/bin"
+echo "#### 1c. Move kubectl to /usr/local/bin"
 mv kubectl /usr/local/bin/
 chmod +x /usr/local/bin/kubectl
 kubectl version
 
-echo "#### Install Podman on an RHEL machine. For more information, see Podman installation instructions."
+echo "#### 2. Install Podman on an RHEL machine. For more information, see Podman installation instructions."
 yum install -y git unzip podman
 
-echo "#### Download and install the most recent version of the IBM Catalog Management Plug-in"
+echo "#### 3a. Download and install the most recent version of the IBM Catalog Management Plug-in"
 curl -L https://github.com/IBM/ibm-pak/releases/download/v1.10.0/oc-ibm_pak-linux-amd64.tar.gz -o oc-ibm_pak-linux-amd64.tar.gz
 
-echo "#### Untar IBM Catalog Management Plug-in"
+echo "#### 3b. Untar IBM Catalog Management Plug-in"
 tar -zxvf oc-ibm_pak-linux-amd64.tar.gz
 
-echo "#### Move oc-ibmpak to /usr/local/bin"
+echo "#### 3c. Move oc-ibmpak to /usr/local/bin"
 mv oc-ibm_pak-linux-amd64 /usr/local/bin/oc-ibm_pak
 oc-ibm_pak --version
 
@@ -49,17 +49,7 @@ oc-ibm_pak --version
 ####################################################################
 # https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.1?topic=deployment-setting-up-private-registry
 
-# echo "#### Create a cp namespace to store the images from the IBM Entitled Registry cp.icr.io/cp."
-# oc new-project cp
-
-# echo "#### Create a ibmcom namespace to store all images from all IBM images that do not require credentials to pull."
-# oc new-project ibmcom
-
-# echo "#### Create a cpopen namespace to store all images from the icr.io/cpopen repository"
-# oc new-project cpopen
-
-# echo "#### reate a opencloudio namespace to store the images from quay.io/opencloudio."
-# oc new-project opencloudio
+# No need to do this section because the private registry supports auto-repository creation
 
 # Important: Verify that each namespace meets the following requirements:
 # Supports auto-repository creation.

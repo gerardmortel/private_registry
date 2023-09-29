@@ -8,77 +8,99 @@
 # https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.1?topic=mipr-option-1-mirroring-images-private-registry-bastion-server
 
 
-echo "#### Generate mirror manifests to be used when mirroring the image to the target registry."
-echo "#### The TARGET_REGISTRY refers to the registry where the images are mirrored to and accessed by the OCP cluster."
-echo "#### TARGET_REGISTRY=${TARGET_REGISTRY}" 
+echo "#### 1. Generate the required mirror manifests."
+echo '#### 1a. Define the environment variable $TARGET_REGISTRY'
+echo "#### 1a. The TARGET_REGISTRY refers to the registry where the images are mirrored to and accessed by the OCP cluster."
+echo "#### 1a. TARGET_REGISTRY=${TARGET_REGISTRY}"
+
+echo "#### 1b. Create the following environment variables with the installer image name and the version."
+echo "#### 1b. CASE_NAME=${CASE_NAME}"
+echo "#### 1b. CASE_VERSION=${CASE_VERSION}
+
+echo "#### 1c. Generate mirror manifests to be used when mirroring the image to the target registry."
+echo "#### 1c. The $TARGET_REGISTRY refers to the registry where the images are mirrored to and accessed by the OCP cluster.
 # oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY \
 #   --version $CASE_VERSION
 oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY \
   --version $CASE_VERSION \
   --filter ibmcp4baProd,ibmcp4baODMImages,ibmcp4baBASImages,ibmcp4baAAEImages,ibmEdbStandard
 
-echo "#### list all the images in your mirror manifest and the publicly accessible registries from where the images are pulled from."
+echo "#### 1d. List all the images in your mirror manifest and the publicly accessible registries from where the images are pulled from."
 oc ibm-pak describe $CASE_NAME \
   --version $CASE_VERSION \
   --list-mirror-images
 
-echo "#### Authenticate the registries"
-echo "#### Login to the IBM Container Registry"
+echo "#### 2. Authenticate the registries"
+echo "#### 2a. Login to the IBM Container Registry"
 podman login -u ${ICR_USERNAME} -p ${API_KEY_GENERATED} cp.icr.io
 
-echo "#### Login to ${TARGET_REGISTRY}"
+echo "#### 2b. Login to ${TARGET_REGISTRY}"
 podman login -u ${PRIVATE_REGISTRY_USERNAME} -p ${PRIVATE_REGISTRY_PASSWORD} ${TARGET_REGISTRY}
 
-echo "#### Mirror the images until no errors appear in the logs"
+echo "#### Extra: 3. Mirror the images until no errors appear in the logs"
 i=1
 j=0
 while [ true ]
 do
-  nohup oc image mirror -f /root/.ibm-pak/data/mirror/ibm-cp-automation/5.0.2/images-mapping.txt \
+  echo "#### 3a. Mirror the images to the target registry"
+  nohup oc image mirror -f /root/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/images-mapping.txt \
   --filter-by-os '.*' \
   -a $REGISTRY_AUTH_FILE \
   --insecure \
   --skip-multiple-scopes \
-  --max-per-registry=1 | tee mirror${i}.log
+  --max-per-registry=1 \
+  --continue-on-error=true \
+  | tee mirror${i}.log
   j=$(grep "error" mirror${i}.log|wc -l)
   if [ ${j} -gt 0 ]; then
-    echo "#### Mirror images FAILED.  Invoking mirror image command again."
+    echo "#### Extra: 3a. Mirror images FAILED.  Invoking mirror image command again."
     ((i=i+1))
   else
-    echo "#### Mirror images SUCCEEDED"
+    echo "#### Extra: 3a. Mirror images SUCCEEDED"
     break
   fi
 done
 
-echo "#### Test listing the tags for the navigator image"
+echo "#### 3b. Update the global image pull secret for your OpenShift cluster to have authentication credentials in place "
+echo "#### 3b. to pull images from your $TARGET_REGISTRY as specified in the image-content-source-policy.yaml file. For more information, see "
+echo "#### 3b. Updating the global cluster pull secret."
+echo "#### 3b. https://docs.openshift.com/container-platform/4.10/openshift_images/managing_images/using-image-pull-secrets.html#images-update-global-pull-secret_using-image-pull-secrets"
+
+
+echo "#### Extra: 3a. Test listing the tags for the navigator image"
 curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/cp/cp4a/ban/navigator-sso/tags/list | grep name | jq
 
-echo "#### Login to the OpenShift cluster"
+echo "#### 3c. Extra: Login to the OpenShift cluster before creating image content source policy"
 oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS} --insecure-skip-tls-verify
 
-echo "#### Run the following command to create ImageContentsourcePolicy."
+echo "#### 3c. Create ImageContentsourcePolicy."
 oc apply -f ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-content-source-policy.yaml
 
-echo "#### Check the number of updated machines equals ${NUM_OF_MACHINES}"
+echo "#### 3d. Verify that the ImageContentsourcePolicy resource is created."
+oc get imageContentSourcePolicy
+
+echo "#### 3e. Verify your cluster node status."
+echo "#### Extra: 3e. Check the number of updated machines equals ${NUM_OF_MACHINES}"
 NUM_OF_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | wc -l)
 NUM_OF_UPDATED_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | awk '{ print $3 }' | grep "True" | wc -l)
 #NUM_OF_UPDATING_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | awk '{ print $4 }' | grep "True" | wc -l)
 while [ true ]
 do
+  echo "#### Extra: 3e. Compare the number of updated machines with the number of machines.  If equal, update is complete."
   NUM_OF_UPDATED_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | awk '{ print $3 }' | grep "True" | wc -l)
   if [[ ${NUM_OF_UPDATED_MACHINES} -eq ${NUM_OF_MACHINES} ]]; then
-    echo "#### Yes, the update is done."
+    echo "#### Extra: 3e. Yes, the update is done."
     break
   else
-    echo "#### No, the update is not done so sleep for 10 seconds"
+    echo "#### Extra: 3e. No, the update is not done so sleep for 10 seconds"
     sleep 10
   fi
 done
 
-echo "#### Create a project for the CASE commands (cp4ba is an example)"
+echo "#### 3f. Create a project for the CASE commands (cp4ba is an example)"
 # Note: Before you run the command in this step, you must be logged in to your OpenShift cluster.
 oc new-project $CP4BANAMESPACE
 
-# echo "#### Optional: If you use an insecure registry, you must add the target registry to the cluster insecureRegistries list"
+# echo "#### 3g. Optional: If you use an insecure registry, you must add the target registry to the cluster insecureRegistries list"
 # oc patch image.config.openshift.io/cluster \
 #   --type=merge -p '{"spec":{"registrySources":{"insecureRegistries":["'${TARGET_REGISTRY}'"]}}}' 

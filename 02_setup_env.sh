@@ -4,7 +4,7 @@ echo "#### Set up the environment variables"
 export PRIVATE_REGISTRY_USERNAME=""
 export PRIVATE_REGISTRY_PASSWORD=""
 export DOCKER_USERNAME=""
-export DOCKEr_PASSWORD=""
+export DOCKER_PASSWORD=""
 export OCP_VERSION="" # 4.12.22
 export TARGET_REGISTRY=""
 export CASE_NAME=""
