@@ -15,10 +15,10 @@ echo "#### 1a. TARGET_REGISTRY=${TARGET_REGISTRY}"
 
 echo "#### 1b. Create the following environment variables with the installer image name and the version."
 echo "#### 1b. CASE_NAME=${CASE_NAME}"
-echo "#### 1b. CASE_VERSION=${CASE_VERSION}
+echo "#### 1b. CASE_VERSION=${CASE_VERSION}"
 
 echo "#### 1c. Generate mirror manifests to be used when mirroring the image to the target registry."
-echo "#### 1c. The $TARGET_REGISTRY refers to the registry where the images are mirrored to and accessed by the OCP cluster.
+echo "#### 1c. The $TARGET_REGISTRY refers to the registry where the images are mirrored to and accessed by the OCP cluster."
 # oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY \
 #   --version $CASE_VERSION
 oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY \
@@ -61,14 +61,41 @@ do
   fi
 done
 
+echo "#### Extra: 3a. Test by listing the tags for the navigator-sso image"
+curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/cp/cp4a/ban/navigator-sso/tags/list | grep name | jq
+
 echo "#### 3b. Update the global image pull secret for your OpenShift cluster to have authentication credentials in place "
 echo "#### 3b. to pull images from your $TARGET_REGISTRY as specified in the image-content-source-policy.yaml file. For more information, see "
 echo "#### 3b. Updating the global cluster pull secret."
 echo "#### 3b. https://docs.openshift.com/container-platform/4.10/openshift_images/managing_images/using-image-pull-secrets.html#images-update-global-pull-secret_using-image-pull-secrets"
+echo "#### Extra: 3b. Get the existing pull secret"
+oc get secrets pull-secret -n openshift-config -o template='{{index .data ".dockerconfigjson"}}' | base64 -d > pull-secret.json
 
+echo "#### Extra: 3b. Format the pull secret nicely"
+cat pull-secret.json | jq > pull-secret-v2.json
 
-echo "#### Extra: 3a. Test listing the tags for the navigator image"
-curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/cp/cp4a/ban/navigator-sso/tags/list | grep name | jq
+echo "#### Extra: 3b. Delete the last 3 lines from the nicely formatted pull secret file"
+head -n -3 pull-secret-v2.json > pull-secret-v3.json
+
+echo "#### Extra: 3b. Create the private registry credentials to add later into the pull secret"
+cat <<EOF > registry-secret.json
+    },
+    "${HOSTNAME}:5000": {
+      "auth": "$( echo -n ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} | base64 -w0 )",
+      "email": "registry@redhat.com"
+    }
+  }
+}
+EOF
+
+echo "#### Extra: 3b. Add the registry-secret.json to the end of the pull secret"
+cat pull-secret-v3.json registry-secret.json > pull-secret-v4.json
+
+echo "#### Extra: 3b. Reformat json and verify json is well formatted"
+cat pull-secret-v4.json | jq > pull-secret-v5.json
+
+echo "#### Extra: 3b. Update the pull secret"
+oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=./pull-secret-v5.json
 
 echo "#### 3c. Extra: Login to the OpenShift cluster before creating image content source policy"
 oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS} --insecure-skip-tls-verify
@@ -99,7 +126,7 @@ done
 
 echo "#### 3f. Create a project for the CASE commands (cp4ba is an example)"
 # Note: Before you run the command in this step, you must be logged in to your OpenShift cluster.
-oc new-project $CP4BANAMESPACE
+oc new-project $NAMESPACE
 
 # echo "#### 3g. Optional: If you use an insecure registry, you must add the target registry to the cluster insecureRegistries list"
 # oc patch image.config.openshift.io/cluster \
