@@ -73,11 +73,11 @@ IMAGE="ubuntu"
 echo "#### Extra: List tags for a image ${IMAGE}"
 curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/${IMAGE}/tags/list | grep name | jq
 
-# IMAGE="cpopen/ibm-common-service-operator-bundle"
-# curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/${IMAGE}/tags/list | grep name | jq
+IMAGE="cpopen/ibm-common-service-operator-bundle"
+curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/${IMAGE}/tags/list | grep name | jq
 
-# IMAGE="cpopen/ibm-cpd-cloud-native-postgresql-operator-catalog"
-# curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/${IMAGE}/tags/list | grep name | jq
+IMAGE="cpopen/ibm-cert-manager-operator-bundle"
+curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/${IMAGE}/tags/list | grep name | jq
 
 # If you did not install jq, list the repositories
 # curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://$HOSTNAME:5000/v2/_catalog
