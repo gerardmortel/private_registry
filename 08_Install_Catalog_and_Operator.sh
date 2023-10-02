@@ -59,7 +59,7 @@ oc get subscriptions.operators.coreos.com -n $NAMESPACE
 echo "#### 7b. Check for subscriptions that are waiting for approval, get the install plans by running the following command."
 oc get installPlan
 
-echo "#### 7c. "
+echo "#### 7c. Check cluster service version"
 oc get csv -n $NAMESPACE
 
 echo "#### 7d. Monitor the operator logs with the following command."
