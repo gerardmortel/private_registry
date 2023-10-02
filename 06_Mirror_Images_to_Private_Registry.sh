@@ -113,6 +113,8 @@ NUM_OF_UPDATED_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | awk '{ pri
 #NUM_OF_UPDATING_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | awk '{ print $4 }' | grep "True" | wc -l)
 while [ true ]
 do
+  echo "#### 3e. Verify your cluster node status."
+  oc get MachineConfigPool
   echo "#### Extra: 3e. Compare the number of updated machines with the number of machines.  If equal, update is complete."
   NUM_OF_UPDATED_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | awk '{ print $3 }' | grep "True" | wc -l)
   if [[ ${NUM_OF_UPDATED_MACHINES} -eq ${NUM_OF_MACHINES} ]]; then
