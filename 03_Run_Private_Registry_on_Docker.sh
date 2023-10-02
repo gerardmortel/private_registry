@@ -21,19 +21,13 @@ docker compose version
 docker pull registry
 
 echo "#### Extra: Make registry directory to hold images, auth to hold credentials and certs to hold certs"
-# rm -rf /opt/registry/{auth,certs,data}
-# mkdir -p /opt/registry/{auth,certs,data}
 rm -rf /{auth,certs,data}
 mkdir -p /{auth,certs,data}
 
-# Create username and password and run it in a container, let it run don't stop it
-# mkdir /auth
-# docker run \
-#  --entrypoint htpasswd \
-# httpd:2 -Bbn admin Passw0rd > /auth/htpasswd
-
-echo "#### Extra: Use the htpasswd utility to generate a file containing the credentials for accessing the registry"
-htpasswd -bBc /auth/htpasswd ${PRIVATE_REGISTRY_USERNAME} ${PRIVATE_REGISTRY_PASSWORD}
+echo "#### Extra: Create username and password and run it in a container, let it run don't stop it"
+docker run \
+ --entrypoint htpasswd \
+httpd:2 -Bbn ${PRIVATE_REGISTRY_USERNAME} ${PRIVATE_REGISTRY_PASSWORD} > /auth/htpasswd
 
 echo "#### Extra: export GODEBUG=x509ignoreCN=0"
 export GODEBUG=x509ignoreCN=0
@@ -71,7 +65,7 @@ systemctl start docker
 #  registry:2
 
 echo "#### Extra: Login to docker to create /run/user/0/containers/auth.json"
-podman login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} docker.io
+docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} docker.io
 
 echo "#### Extra: Run the registry container.  Note: On RHEL 9.2, needed to put all directories off of root "/".  Could not use /opt/registry"
 docker run --name registry \
@@ -117,7 +111,7 @@ openssl s_client -connect ${HOSTNAME}:5000 -servername ${HOSTNAME} <<END
 END
 
 # echo "#### Extra: Stop registry"
-# podman stop registry
+# docker stop registry
 
 # echo "#### Extra: Stop registry and remove all data"
-# podman container stop registry && podman container rm -v registry
+# docker container stop registry && docker container rm -v registry
