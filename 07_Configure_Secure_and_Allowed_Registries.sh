@@ -59,6 +59,10 @@ cat <<EOF > cluster1.json
       {
         "domainName": "k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2",
         "insecure": false
+      },
+      {
+        "domainName": "gcr.io/google_containers/busybox:1.24",
+        "insecure": false
       }
     ],
     "registrySources": {
@@ -71,7 +75,8 @@ cat <<EOF > cluster1.json
         "cdn02.quay.io",
         "cdn03.quay.io",
         "registry.redhat.io",
-        "k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2"
+        "k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2",
+        "gcr.io/google_containers/busybox:1.24"
       ]
     }
   }
