@@ -103,6 +103,9 @@ oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS} --
 echo "#### 3c. Create ImageContentsourcePolicy."
 oc apply -f ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-content-source-policy.yaml
 
+echo "#### Extra: 3c. Sleep 30 seconds to let the image content source policy take effect"
+sleep 30
+
 echo "#### 3d. Verify that the ImageContentsourcePolicy resource is created."
 oc get imageContentSourcePolicy
 
@@ -111,6 +114,7 @@ echo "#### Extra: 3e. Check the number of updated machines equals ${NUM_OF_MACHI
 NUM_OF_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | wc -l)
 NUM_OF_UPDATED_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | awk '{ print $3 }' | grep "True" | wc -l)
 #NUM_OF_UPDATING_MACHINES=$(oc get MachineConfigPool | grep -v "NAME" | awk '{ print $4 }' | grep "True" | wc -l)
+
 while [ true ]
 do
   echo "#### 3e. Verify your cluster node status."
