@@ -103,7 +103,7 @@ oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS} --
 echo "#### 3c. Create ImageContentsourcePolicy."
 oc apply -f ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-content-source-policy.yaml
 
-echo "#### Extra: 3e. Sleep 30 seconds to let the image content source policy take effect"
+echo "#### Extra: 3c. Sleep 30 seconds to let the image content source policy take effect"
 sleep 30
 
 echo "#### 3d. Verify that the ImageContentsourcePolicy resource is created."
