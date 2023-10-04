@@ -64,6 +64,9 @@ done
 echo "#### Extra: 3a. Test by listing the tags for the navigator-sso image"
 curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/cp/cp4a/ban/navigator-sso/tags/list | grep name | jq
 
+echo "#### Extra: 3b. Login to the OpenShift cluster"
+oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS} --insecure-skip-tls-verify
+
 echo "#### 3b. Update the global image pull secret for your OpenShift cluster to have authentication credentials in place "
 echo "#### 3b. to pull images from your $TARGET_REGISTRY as specified in the image-content-source-policy.yaml file. For more information, see "
 echo "#### 3b. Updating the global cluster pull secret."
