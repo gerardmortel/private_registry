@@ -20,7 +20,7 @@ docker compose version
 # Pull docker registry image
 docker pull registry
 
-echo "#### Extra: Make registry directory to hold images, auth to hold credentials and certs to hold certs"
+echo "#### Extra: Make data directory to hold images, auth to hold credentials and certs to hold certs"
 rm -rf /{auth,certs,data}
 mkdir -p /{auth,certs,data}
 
