@@ -100,8 +100,8 @@ cat pull-secret-v4.json | jq > pull-secret-v5.json
 echo "#### Extra: 3b. Update the pull secret"
 oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=./pull-secret-v5.json
 
-echo "#### 3c. Extra: Login to the OpenShift cluster before creating image content source policy"
-oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS} --insecure-skip-tls-verify
+# echo "#### 3c. Extra: Login to the OpenShift cluster before creating image content source policy"
+# oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS} --insecure-skip-tls-verify
 
 echo "#### 3c. Create ImageContentsourcePolicy."
 oc apply -f ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-content-source-policy.yaml
