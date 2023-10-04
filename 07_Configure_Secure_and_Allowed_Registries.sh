@@ -63,6 +63,14 @@ cat <<EOF > cluster1.json
       {
         "domainName": "gcr.io/google_containers/busybox:1.24",
         "insecure": false
+      },
+      {
+        "domainName": "icr.io",
+        "insecure": false
+      },
+      {
+        "domainName": "cp.icr.io",
+        "insecure": false
       }
     ],
     "registrySources": {
@@ -76,7 +84,9 @@ cat <<EOF > cluster1.json
         "cdn03.quay.io",
         "registry.redhat.io",
         "k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2",
-        "gcr.io/google_containers/busybox:1.24"
+        "gcr.io/google_containers/busybox:1.24",
+        "icr.io",
+        "cp.icr.io"
       ]
     }
   }
