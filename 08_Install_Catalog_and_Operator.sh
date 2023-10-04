@@ -18,15 +18,27 @@ cat $HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/catalog-sources.yaml | s
 
 echo "#### 4. Verify that the CatalogSource for Cloud Pak for Business Automation and its dependencies are created."
 echo "#### 4. Check that the following pods are recently created."
-# To Do: while loop until all pods are ready
-oc get pods -n openshift-marketplace
+echo "#### Extra: 4. sleep 20 seconds to let the catalog source creation to spin up pods"
+sleep 20
+
+while [ true ]
+do
+  oc get pods -n openshift-marketplace
+  echo "#### Extra: 4. Check if the number of not ready pods is greater than zero."
+  if [[ $(oc get pods -n openshift-marketplace | grep -v NAME | awk '{print $2}' | grep -v "1/1" | wc -l) -gt 0 ]]; then
+    echo "#### Extra: 4. Not all pods in openshift-marketplace are ready, sleep for 10 seconds."
+    sleep 10
+  else
+    echo "#### Extra: 4. All pods in openshift-marketplace are ready."
+    break
+  fi
+done
 
 echo "#### 4. Check that the following catalog sources are recently created:"
 # To Do: while loop until the catalog sources are created
 oc get catalogsource -n openshift-marketplace
 
 echo "#### 5. A script must be run to install IBM License Service and IBM Certificate Manager"
-
 echo "#### 5a. Clone the ibm-common-service-operator scripts from Git to a client of your target cluster."
 git clone -b scripts https://github.com/IBM/ibm-common-service-operator.git
 
