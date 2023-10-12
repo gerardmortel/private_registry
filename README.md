@@ -20,7 +20,7 @@ The purpose of this repo is to assist in creating a private registry running on 
 8. rm -f main.zip
 9. cd private_registry-main
 10. STOP! Put your values for ALL VARIABLES inside file 02_setup_env.sh
-11. ./01_driver.sh | tee install.log
+11. ./01_driver.sh | tee install_private_registry.log
 
 # Resources used to create this
 Red Hat OpenShift: How to create and integrate a private registry with stronger security capabilities
