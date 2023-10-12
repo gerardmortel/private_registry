@@ -25,7 +25,7 @@ while [ true ]
 do
   oc get pods -n openshift-marketplace
   echo "#### Extra: 4. Check if the number of not ready pods is greater than zero."
-  if [[ $(oc get pods -n openshift-marketplace | grep -v NAME | awk '{print $2}' | grep -v "1/1" | wc -l) -gt 0 ]]; then
+  if [[ $(oc get pods -n openshift-marketplace | grep -v NAME | grep -v Completed | awk '{print $2}' | grep -v "1/1" | wc -l) -gt 0 ]]; then
     echo "#### Extra: 4. Not all pods in openshift-marketplace are ready, sleep for 10 seconds."
     sleep 10
   else
