@@ -24,6 +24,9 @@ curl -L ${CASE_TO_BE_MIRRORED_URL} -o cp4ba-case-to-be-mirrored.txt
 # Cloud Pak for Business Automation: CASE image digests
 # https://www.ibm.com/support/pages/node/6596381
 
+# Cloud Pak for Business Automation Interim fix download document
+# https://www.ibm.com/support/pages/cloud-pak-business-automation-interim-fix-download-document
+
 # 22.0.2_IF005
 # https://www.ibm.com/support/pages/system/files/inline-files/cp4ba-case-to-be-mirrored-22.0.2-IF005.txt
 # curl -L https://www.ibm.com/support/pages/system/files/inline-files/cp4ba-case-to-be-mirrored-22.0.2-IF005.txt -o cp4ba-case-to-be-mirrored.txt
@@ -43,7 +46,11 @@ curl -L ${CASE_TO_BE_MIRRORED_URL} -o cp4ba-case-to-be-mirrored.txt
 # https://www.ibm.com/support/pages/system/files/inline-files/cp4ba-case-to-be-mirrored-23.0.1-IF003_7.txt
 # curl -L https://www.ibm.com/support/pages/system/files/inline-files/cp4ba-case-to-be-mirrored-23.0.1-IF003_7.txt -o cp4ba-case-to-be-mirrored.txt
 
+# 23.0.1_IF005
+# https://www.ibm.com/support/pages/system/files/inline-files/cp4ba-case-to-be-mirrored-23.0.1-IF005_3.txt
+# curl -L https://www.ibm.com/support/pages/system/files/inline-files/cp4ba-case-to-be-mirrored-23.0.1-IF005_3.txt -o cp4ba-case-to-be-mirrored.txt
 # Sometimes the download in the previous step fails so put the download in a while loop until successful
+
 echo "#### Extra: 2d. Check cp4ba-case-to-be-mirrored.txt is correct"
 while [ true ]
 do
