@@ -18,3 +18,4 @@ export NAMESPACE=""
 export CLUSTER_USER=""
 export CLUSTER_PASS=""
 export CLUSTER_URL=""
+export INSTALLTYPE="" # cp4ba or helm
