@@ -40,3 +40,5 @@ https://access.redhat.com/announcements/7000333
 
 Operator installation or upgrade fails with DeadlineExceeded error
 https://www.ibm.com/docs/en/cloud-paks/foundational-services/4.2?topic=issues-operator-installation-upgrade-fails-deadlineexceeded-error
+
+[IBM Pak Releases](https://github.com/IBM/ibm-pak/releases)
