@@ -147,11 +147,13 @@ EOF
 else
   echo "#### 3. Mirror images to the final location.  Complete the steps in this section on your host that is connected to both the local Docker registry and the Kubernetes cluster."
   echo "#### 3a. Edit ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/images-mapping.txt and append -<architecture> at the end of each destination record, for example:"
-  # cp.icr.io/cp/cp4a/odm/dbserver@sha256:xxx=<TARGET_REGISTRY>/cp/cp4a/odm/dbserver:8.12.0.0-amd64
-  # cp.icr.io/cp/cp4a/odm/odm-decisioncenter@sha256:xxx=<TARGET_REGISTRY>/cp/cp4a/odm/odm-decisioncenter:8.12.0.0-amd64
-  # cp.icr.io/cp/cp4a/odm/odm-decisionrunner@sha256:xxx=<TARGET_REGISTRY>/cp/cp4a/odm/odm-decisionrunner:8.12.0.0-amd64
-  # cp.icr.io/cp/cp4a/odm/odm-decisionserverconsole@sha256:xxx=<TARGET_REGISTRY>/cp/cp4a/odm/odm-decisionserverconsole:8.12.0.0-amd64
-  # cp.icr.io/cp/cp4a/odm/odm-decisionserverruntime@sha256:xxx=<TARGET_REGISTRY>/cp/cp4a/odm/odm-decisionserverruntime:8.12.0.0-amd64
+
+  cat ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/images-mapping.txt | while read line
+  do
+    echo $line-amd64 >> ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/images-mapping-v2.txt
+  done
+  rm -f ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/images-mapping.txt
+  mv ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/images-mapping-v2.txt ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/images-mapping.txt
 
   echo "#### 3. Mirror images to the TARGET_REGISTRY. Mirroring from a bastion host (connected mirroring):"
   oc image mirror \
