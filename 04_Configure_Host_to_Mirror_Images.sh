@@ -27,7 +27,7 @@ echo "#### 2. Install Podman on an RHEL machine. For more information, see Podma
 yum install -y git unzip podman
 
 echo "#### 3a. Download and install the most recent version of the IBM Catalog Management Plug-in"
-curl -L https://github.com/IBM/ibm-pak/releases/download/v1.10.0/oc-ibm_pak-linux-amd64.tar.gz -o oc-ibm_pak-linux-amd64.tar.gz
+curl -L ${IBMPAKVERSION} -o oc-ibm_pak-linux-amd64.tar.gz
 
 echo "#### 3b. Untar IBM Catalog Management Plug-in"
 tar -zxvf oc-ibm_pak-linux-amd64.tar.gz
