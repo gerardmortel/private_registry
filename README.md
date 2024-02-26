@@ -23,22 +23,20 @@ The purpose of this repo is to assist in creating a private registry running on 
 11. ./01_driver.sh | tee install_private_registry.log
 
 # Resources used to create this
-Red Hat OpenShift: How to create and integrate a private registry with stronger security capabilities
-https://www.redhat.com/en/blog/openshift-private-registry
+[IBM Pak Releases to set variable IBMPAKVERSION](https://github.com/IBM/ibm-pak/releases)
 
-How to implement a simple personal/private Linux container image registry for internal use
-https://www.redhat.com/sysadmin/simple-container-registry
+[CP4BA IFIX Download to set CASE_TO_BE_MIRRORED_URL](https://www.ibm.com/support/pages/cloud-pak-business-automation-interim-fix-download-document)
 
-Using image pull secrets
-https://docs.openshift.com/container-platform/4.13/openshift_images/managing_images/using-image-pull-secrets.html
+[To get the lastest CASE version for CP4BA](https://github.com/IBM/cloud-pak/blob/master/repo/case/ibm-cp-automation/index.yaml)
 
-Image configuration resources
-https://docs.openshift.com/container-platform/4.12/openshift_images/image-configuration.html
+[Red Hat OpenShift: How to create and integrate a private registry with stronger security capabilities](https://www.redhat.com/en/blog/openshift-private-registry)
 
-Important firewall changes for customers pulling container images
-https://access.redhat.com/announcements/7000333
+[How to implement a simple personal/private Linux container image registry for internal use](https://www.redhat.com/sysadmin/simple-container-registry)
 
-Operator installation or upgrade fails with DeadlineExceeded error
-https://www.ibm.com/docs/en/cloud-paks/foundational-services/4.2?topic=issues-operator-installation-upgrade-fails-deadlineexceeded-error
+[Using image pull secrets](https://docs.openshift.com/container-platform/4.13/openshift_images/managing_images/using-image-pull-secrets.html)
 
-[IBM Pak Releases](https://github.com/IBM/ibm-pak/releases)
+[Image configuration resources](https://docs.openshift.com/container-platform/4.12/openshift_images/image-configuration.html)
+
+[Important firewall changes for customers pulling container images](https://access.redhat.com/announcements/7000333)
+
+[Operator installation or upgrade fails with DeadlineExceeded error](https://www.ibm.com/docs/en/cloud-paks/foundational-services/4.2?topic=issues-operator-installation-upgrade-fails-deadlineexceeded-error)
