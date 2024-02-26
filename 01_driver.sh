@@ -2,8 +2,8 @@
 
 echo "#### Running the driver file"
 . ./02_setup_env.sh
-./03_Run_Private_Registry_on_Podman.sh
-./04_Configure_Host_to_Mirror_Images.sh
+./03_Set_up_host_to_mirror_images_to_a_private_registry
+./04_Set_up_a_private_registry_on_Podman
 ./05_Download_CASE_files.sh
 ./06_Mirror_Images_to_Private_Registry.sh
 ./07_Configure_Secure_Private_Registry.sh

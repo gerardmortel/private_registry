@@ -23,7 +23,7 @@ if [ ${INSTALLTYPE} -eq "cp4ba" ]; then
   oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY \
     --version $CASE_VERSION \
     --filter ibmcp4baProd,ibmcp4baODMImages,ibmcp4baBASImages,ibmcp4baAAEImages,ibmEdbStandard
-else
+else # ODM Helm install, not CP4BA install
   oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY \
     --version $CASE_VERSION
 fi
@@ -39,6 +39,12 @@ podman login -u ${ICR_USERNAME} -p ${API_KEY_GENERATED} cp.icr.io
 
 echo "#### 2b. Login to ${TARGET_REGISTRY}"
 podman login -u ${PRIVATE_REGISTRY_USERNAME} -p ${PRIVATE_REGISTRY_PASSWORD} ${TARGET_REGISTRY}
+
+echo "#### 2c. If using Docker set REGISTRY_AUTH_FILE in 02_setup_env.sh"
+# If you export REGISTRY_AUTH_FILE=~/.ibm-pak/auth.json, and then run the podman login command, you can see that the file is populated with registry credentials.
+# If you use docker login, the authentication file is typically located in $HOME/.docker/config.json on Linux or %USERPROFILE%/.docker/config.json on Windows. After you run the docker login command, you can export REGISTRY_AUTH_FILE to point to that location. For example, on Linux you can run the following command:
+# Set in 02_setup_env.sh
+# export REGISTRY_AUTH_FILE=$HOME/.docker/config.json
 
 if [ ${INSTALLTYPE} -eq "cp4ba" ]; then
   echo "#### Extra: 3. Mirror the images until no errors appear in the logs"
@@ -104,13 +110,10 @@ EOF
   echo "#### Extra: 3b. Update the pull secret"
   oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=./pull-secret-v5.json
 
-  # echo "#### 3c. Extra: Login to the OpenShift cluster before creating image content source policy"
-  # oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS} --insecure-skip-tls-verify
-
   echo "#### 3c. Create ImageContentsourcePolicy."
   oc apply -f ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-content-source-policy.yaml
 
-  echo "#### Extra: 3c. Sleep 30 seconds to let the image content source policy take effect"
+  echo "#### Extra: 3c. Sleep 30 seconds to let the image content source policy get created"
   sleep 30
 
   echo "#### 3d. Verify that the ImageContentsourcePolicy resource is created."
@@ -144,7 +147,8 @@ EOF
   # echo "#### 3g. Optional: If you use an insecure registry, you must add the target registry to the cluster insecureRegistries list"
   # oc patch image.config.openshift.io/cluster \
   #   --type=merge -p '{"spec":{"registrySources":{"insecureRegistries":["'${TARGET_REGISTRY}'"]}}}'
-else
+
+else # ODM Helm install, not CP4bA install
   echo "#### 3. Mirror images to the final location.  Complete the steps in this section on your host that is connected to both the local Docker registry and the Kubernetes cluster."
   echo "#### 3a. Edit ~/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/images-mapping.txt and append -<architecture> at the end of each destination record, for example:"
 
@@ -165,11 +169,10 @@ else
   --max-per-registry=1
 
   echo "#### 4. Configure the cluster."
-  echo "#### Extra 4a. Log into your OCP cluster"
+  echo "#### 4a. Log into your OCP cluster"
   oc login ${CLUSTER_URL} --username=${CLUSTER_USER} --password=${CLUSTER_PASS}
 
-  echo "#### 4. Create a project for the ODM installation by running the following commands"
-  echo "#### 4b. Openshift"
+  echo "#### 4b. Create a project for the ODM installation by running the following commands"
   oc new-project $NAMESPACE
 
   echo "#### 4c. Create a pull secret."
@@ -177,4 +180,8 @@ else
   --auth-basic="${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD}" \
   --to=.dockerconfig.json
   oc create secret generic pull-secret --from-file .dockerconfigjson=.dockerconfig.json
+
+  # echo "#### Optional: 4d In OpenShift, if you use an insecure registry, you must add the target registry to the insecureRegistries list of the cluster."
+  # oc patch image.config.openshift.io/cluster --type=merge \
+  #  -p '{"spec":{"registrySources":{"insecureRegistries":["'${TARGET_REGISTRY}'"]}}}'
 fi
