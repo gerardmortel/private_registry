@@ -51,8 +51,12 @@ if [ ${INSTALLTYPE} -eq "cp4ba" ]; then
   # 23.0.1_IF005
   # https://www.ibm.com/support/pages/system/files/inline-files/cp4ba-case-to-be-mirrored-23.0.1-IF005_3.txt
   # curl -L https://www.ibm.com/support/pages/system/files/inline-files/cp4ba-case-to-be-mirrored-23.0.1-IF005_3.txt -o cp4ba-case-to-be-mirrored.txt
-  # Sometimes the download in the previous step fails so put the download in a while loop until successful
+  
+  # 23.0.2_IF001
+  # "https://www.ibm.com/support/pages/system/files/inline-files/cp4ba-case-to-be-mirrored-23.0.2-IF001.txt
+  # curl -L "https://www.ibm.com/support/pages/system/files/inline-files/cp4ba-case-to-be-mirrored-23.0.2-IF001.txt -o cp4ba-case-to-be-mirrored.txt
 
+  # Sometimes the download in the previous step fails so put the download in a while loop until successful
   echo "#### Extra: 2d. Check cp4ba-case-to-be-mirrored.txt is correct"
   while [ true ]
   do
@@ -85,7 +89,7 @@ if [ ${INSTALLTYPE} -eq "cp4ba" ]; then
     fi
   done
 
-else
+else # Helm install, not CP4BA install
   echo "#### Extra: Install type is: ${INSTALLTYPE}"
 
   echo "#### 4. Configure the plug-in to download the CASE files as OCI artifacts from IBM Cloud Container Registry (ICCR)."
