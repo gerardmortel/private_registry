@@ -49,7 +49,6 @@ echo "#### 4. Make sure that the following network ports are available on the ho
 # A HTTP 403 response is an indication of such a parsing error. Docker and quay image registries might use proxies or mirror sites, so if you see images 
 # blocked check whether it is related to one of these image registries. If one of the registries is blocked, you must add that URL to the website allowlist. 
 # The following websites can be added to the allowlist to prevent pulling image errors.
-
 # cp.icr.io/cp
 # *.quay.io/opencloudio
 # *.icr.io/cpopen
