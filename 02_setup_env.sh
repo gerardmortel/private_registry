@@ -11,6 +11,7 @@ export CASE_NAME=""
 export CASE_VERSION=""
 export CASE_INVENTORY_SETUP=""
 export CASE_TO_BE_MIRRORED_URL=""
+export CPFS_VERSION="" # e.g. 4-4
 export REGISTRY_AUTH_FILE=""
 export ICR_USERNAME=""
 export API_KEY_GENERATED="" # Get entitlement key from https://myibm.ibm.com/products-services/containerlibrary

@@ -14,7 +14,7 @@ echo "#### 2. Set the environment variable of the --inventory parameter"
 echo "#### 2. CASE_INVENTORY_SETUP=${CASE_INVENTORY_SETUP}"
 
 echo "### 3. Create and configure a catalog source."
-cat $HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/catalog-sources.yaml | sed 's/opencloud-operators/opencloud-operators-v4-4/g' | oc apply -f -
+cat $HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/catalog-sources.yaml | sed "s/opencloud-operators/opencloud-operators-v$CPFS_VERSION/g" | oc apply -f -
 
 echo "#### 4. Verify that the CatalogSource for Cloud Pak for Business Automation and its dependencies are created."
 echo "#### 4. Check that the following pods are recently created."
@@ -78,4 +78,4 @@ echo "#### 7d. Monitor the operator logs with the following command."
 # oc logs -f deployment/ibm-cp4a-operator -c operator
 
 # Delete catalog sources
-# cat $HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/catalog-sources.yaml | sed 's/opencloud-operators/opencloud-operators-v4-4/g' | oc delte -f -
+#  cat $HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/catalog-sources.yaml | sed "s/opencloud-operators/opencloud-operators-v$CPFS_VERSION/g" | oc delte -f -
