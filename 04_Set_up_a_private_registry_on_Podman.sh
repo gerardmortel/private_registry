@@ -5,6 +5,9 @@
 #####     Setting up the private image registry on RHEL 9.2     #####
 #####                                                           #####
 #####################################################################
+# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=deployment-setting-up-private-registry
+
+# Registry allows automatic namespace creation so none of the steps 1 thru 4 are required
 
 # Resources
 # How to implement a simple personal/private Linux container image registry for internal use

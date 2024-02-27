@@ -6,6 +6,7 @@
 #####                                                          #####
 ####################################################################
 # https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.1?topic=deployment-setting-up-host-mirror-images-private-registry
+# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=deployment-setting-up-host-mirror-images-private-registry
 
 echo "#### 1. Install the oc OCP CLI tool. For more information, see OCP CLI tools."
 curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OCP_VERSION}/openshift-client-linux-${OCP_VERSION}.tar.gz -o openshift-client-linux-${OCP_VERSION}.tar.gz

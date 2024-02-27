@@ -6,6 +6,7 @@
 #####                                                                                 #####
 ###########################################################################################
 # https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.1?topic=mipr-option-1-mirroring-images-private-registry-bastion-server
+# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=o2mipruoim-option-2a-mirroring-images-private-registry-bastion-server
 # https://www.ibm.com/docs/en/odm/8.12.0?topic=mipr-option-1-mirroring-images-private-container-registry-bastion-server
 
 echo "#### 1. Generate the required mirror manifests."
@@ -28,7 +29,10 @@ else # ODM Helm install, not CP4BA install
     --version $CASE_VERSION
 fi
 
-echo "#### 1d. List all the images in your mirror manifest and the publicly accessible registries from where the images are pulled from."
+echo "##### 1c. Show the .ibm-pak directory structure"
+tree $IBMPAK_HOME/.ibm-pak
+
+echo "#### 1c. List all the images in your mirror manifest and the publicly accessible registries from where the images are pulled from."
 oc ibm-pak describe $CASE_NAME \
   --version $CASE_VERSION \
   --list-mirror-images

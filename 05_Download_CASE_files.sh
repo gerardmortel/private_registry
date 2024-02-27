@@ -6,6 +6,7 @@
 #####                                                          #####
 ####################################################################
 # https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.1?topic=deployment-downloading-case-files
+# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=deployment-downloading-case-files
 # https://www.ibm.com/docs/en/odm/8.12.0?topic=installation-setting-environment-variables-downloading-case-files
 
 echo "#### 1. Connect your host to the internet and disconnect it from the local air-gapped network."
@@ -38,21 +39,26 @@ if [ ${INSTALLTYPE} -eq "cp4ba" ]; then
     fi
   done
 
-  echo "#### 2e. Download of the CASE files for ${INSTALLTYPE}"
+  echo "#### 2e. Create the workspace"
+  mkdir -p $IBMPAK_HOME
+
+  echo "#### 2f. Run the following command to set the environment variable IBMPAK_HOME=$IBMPAK_HOME"
+
+  echo "#### 2g. Download of the CASE files for ${INSTALLTYPE}"
   oc ibm-pak get -c file:///root/private_registry-main/cp4ba-case-to-be-mirrored.txt # CP4BA
 
-  echo "#### 2f. List the versions of all the downloaded CASE files."
+  echo "#### 2h. List the versions of all the downloaded CASE files."
   oc ibm-pak list --downloaded
 
-  echo "#### Extra: 2f. Check that download list actaully contains something"
+  echo "#### Extra: 2h. Check that download list actaully contains something"
   while [ true ]
   do
     oc ibm-pak list --downloaded | grep "ibm-cp-automation"
     if [ $? -eq 0 ]; then
-      echo "#### Extra: 2e. cp4ba-case-to-be-mirrored.txt download SUCCEEDED"
+      echo "#### Extra: 2h. cp4ba-case-to-be-mirrored.txt download SUCCEEDED"
       break
     else
-      echo "#### Extra: 2e. cp4ba-case-to-be-mirrored.txt download FAILED, trying again."
+      echo "#### Extra: 2h. cp4ba-case-to-be-mirrored.txt download FAILED, trying again."
       oc ibm-pak get -c file:///root/private_registry-main/cp4ba-case-to-be-mirrored.txt
     fi
   done

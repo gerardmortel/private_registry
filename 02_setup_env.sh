@@ -21,3 +21,4 @@ export CLUSTER_PASS=""
 export CLUSTER_URL=""
 export INSTALLTYPE="" # cp4ba or helm
 export IBMPAKVERSION=""
+export IBMPAK_HOME="" # e.g. /root/2302
