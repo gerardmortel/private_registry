@@ -20,7 +20,7 @@ echo "#### 1b. CASE_VERSION=${CASE_VERSION}"
 
 echo "#### 1c. Generate mirror manifests to be used when mirroring the image to the target registry."
 echo "#### 1c. The $TARGET_REGISTRY refers to the registry where the images are mirrored to and accessed by the OCP cluster."
-if [ ${INSTALLTYPE} -eq "cp4ba" ]; then
+if [ ${INSTALLTYPE} == "cp4ba" ]; then
   oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY \
     --version $CASE_VERSION \
     --filter ibmcp4baProd,ibmcp4baODMImages,ibmcp4baBASImages,ibmcp4baAAEImages,ibmEdbStandard
@@ -50,7 +50,7 @@ echo "#### 2c. If using Docker set REGISTRY_AUTH_FILE in 02_setup_env.sh"
 # Set in 02_setup_env.sh
 # export REGISTRY_AUTH_FILE=$HOME/.docker/config.json
 
-if [ ${INSTALLTYPE} -eq "cp4ba" ]; then
+if [ ${INSTALLTYPE} == "cp4ba" ]; then
   echo "#### Extra: 3. Mirror the images until no errors appear in the logs"
   i=1
   j=0
