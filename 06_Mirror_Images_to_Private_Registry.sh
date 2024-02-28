@@ -57,7 +57,7 @@ if [ ${INSTALLTYPE} == "cp4ba" ]; then
   while [ true ]
   do
     echo "#### 3a. Mirror the images to the target registry"
-    nohup oc image mirror -f /root/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/images-mapping.txt \
+    nohup oc image mirror -f $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/images-mapping.txt \
     --filter-by-os '.*' \
     -a $REGISTRY_AUTH_FILE \
     --insecure \
