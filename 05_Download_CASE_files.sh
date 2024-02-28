@@ -17,8 +17,9 @@ if [ ${INSTALLTYPE} == "cp4ba" ]; then
   oc ibm-pak config
 
   echo "#### 2b. Configure a repository that downloads the CASE files from the cp.icr.io registry (an OCI-compliant registry) before you run the oc ibm-pak get command. The command sets 'IBM Cloud-Pak OCI registry' as the default repository."
-  oc ibm-pak config repo 'IBM Cloud-Pak OCI registry' -r oci:cp.icr.io/cpopen --enable
-
+  # oc ibm-pak config repo 'IBM Cloud-Pak OCI registry' -r oci:icr.io/cpopen --enable # 23.0.2
+  oc ibm-pak config repo 'IBM Cloud-Pak OCI registry' -r oci:cp.icr.io/cpopen --enable # 23.0.1
+  
   echo "#### 2c. List all the available CASE files to download by running the following command"
   oc ibm-pak list
 
