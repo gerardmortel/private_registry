@@ -24,6 +24,12 @@ mv kubectl /usr/local/bin/
 chmod +x /usr/local/bin/kubectl
 kubectl version
 
+echo "#### 1d. Extra.  Download, extract and move oc-mirror to /usr/local/bin.  Required for oc mirror command."
+curl -L https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest/oc-mirror.tar.gz -o oc-mirror.tar.gz
+tar -xvf oc-mirror.tar.gz
+chmod +x oc-mirror
+mv oc-mirror /usr/local/bin/
+
 echo "#### 2. Install Podman on an RHEL machine. For more information, see Podman installation instructions."
 yum install -y git unzip podman
 
