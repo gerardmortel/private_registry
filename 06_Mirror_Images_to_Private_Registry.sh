@@ -23,7 +23,8 @@ oc ibm-pak config mirror-tools --enabled oc-mirror
 
 echo "#### 1d. Generate mirror manifests to be used when mirroring the catalog to the target registry."
 oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY \
-  --version $CASE_VERSION
+  --version $CASE_VERSION \
+  --filter ibmcp4baProd,ibmcp4baODMImages,ibmcp4baBASImages,ibmcp4baAAEImages,ibmEdbStandard
 
 echo "##### 1c. Show the .ibm-pak directory structure"
 tree $IBMPAK_HOME/.ibm-pak
@@ -45,11 +46,18 @@ echo "#### 2c. REGISTRY_AUTH_FILE=$REGISTRY_AUTH_FILE"
 # If you use docker login, the authentication file is typically located in $HOME/.docker/config.json on Linux or %USERPROFILE%/.docker/config.json on Windows. After you run the docker login command, you can export REGISTRY_AUTH_FILE to point to that location. For example, on Linux you can run the following command:
 # Set in 02_setup_env.sh
 
+echo "#### Remove earlier channels"
+cp -p $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-set-config.yaml $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-set-config.orig.yaml
+sed -ri "s|      - name: v21.3||g" $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-set-config.yaml
+sed -ri "s|      - name: v22.1||g" $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-set-config.yaml
+sed -ri "s|      - name: v22.2||g" $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-set-config.yaml
+sed -ri "s|      - name: v23.1||g" $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-set-config.yaml
+
 echo "#### 3a. Mirror the images to the target registry"
-  nohup oc mirror --config $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-set-config.yaml \
-    docker://$TARGET_REGISTRY/cp4ba-2301 \
-    --dest-skip-tls \
-    --max-per-registry=6 > ~/cp4ba-511.txt 2>&1 &
+nohup oc mirror --config $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-set-config.yaml \
+  docker://$TARGET_REGISTRY/cp4ba-2302-if001 \
+  --dest-skip-tls \
+  --max-per-registry=6 > ~/cp4ba-511.txt 2>&1 &
 
 echo "#### Extra: 3a. Test by listing the tags for the navigator-sso image"
 curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/cp/cp4a/ban/navigator-sso/tags/list | grep name | jq
