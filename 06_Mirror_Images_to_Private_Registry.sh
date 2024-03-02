@@ -34,6 +34,9 @@ oc ibm-pak describe $CASE_NAME \
   --version $CASE_VERSION \
   --list-mirror-images
 
+echo "#### Extra:  For podman, ensure the /run/user/$UID/containers exists so the logins write to the auth.json"
+mkdir -p /run/user/$UID/containers
+
 echo "#### 2. Authenticate the registries"
 echo "#### 2a. Login to the IBM Container Registry"
 podman login -u ${ICR_USERNAME} -p ${API_KEY_GENERATED} cp.icr.io
@@ -54,10 +57,32 @@ sed -ri "s|      - name: v22.2||g" $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/
 sed -ri "s|      - name: v23.1||g" $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-set-config.yaml
 
 echo "#### 3a. Mirror the images to the target registry"
-nohup oc mirror --config $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-set-config.yaml \
-  docker://$TARGET_REGISTRY/cp4ba-2302-if001 \
-  --dest-skip-tls \
-  --max-per-registry=6 > ~/cp4ba-511.txt 2>&1 &
+
+# nohup oc mirror --config $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-set-config.yaml \
+#   docker://$TARGET_REGISTRY/cp4ba-2302-if001 \
+#   --dest-skip-tls \
+#   --max-per-registry=6 > ~/cp4ba-511.txt 2>&1 &
+
+i=1
+j=0
+while [ true ]
+do
+  echo "#### 3a. Mirror the images to the target registry"
+  nohup oc mirror --config $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-set-config.yaml \
+    docker://$TARGET_REGISTRY/cp4ba-2302-if001 \
+    --dest-skip-tls \
+    --max-per-registry=6 \
+    | tee mirror_${i}.log
+  j=$(grep "error" mirror_${i}.log|wc -l)
+  if [ ${j} -gt 0 ]; then
+    echo "#### Extra: 3a. Mirror images FAILED.  Invoking mirror image command again."
+    ((i=i+1))
+    sleep 10
+  else
+    echo "#### Extra: 3a. Mirror images SUCCEEDED"
+    break
+  fi
+done
 
 echo "#### Extra: 3a. Test by listing the tags for the navigator-sso image"
 curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/cp/cp4a/ban/navigator-sso/tags/list | grep name | jq
