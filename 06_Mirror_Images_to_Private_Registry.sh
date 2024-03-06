@@ -22,7 +22,7 @@ echo "#### 1c. Run the following command to set the preferred tool parameter in 
 oc ibm-pak config mirror-tools --enabled oc-mirror
 
 echo "#### 1d. Generate mirror manifests to be used when mirroring the catalog to the target registry."
-oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY \
+oc ibm-pak generate mirror-manifests $CASE_NAME $TARGET_REGISTRY/$LOCATIONX \
   --version $CASE_VERSION \
   --filter ibmcp4baProd,ibmcp4baODMImages,ibmcp4baBASImages,ibmcp4baAAEImages,ibmEdbStandard
 
@@ -69,7 +69,7 @@ while [ true ]
 do
   echo "#### 3a. Mirror the images to the target registry"
   nohup oc mirror --config $IBMPAK_HOME/.ibm-pak/data/mirror/$CASE_NAME/$CASE_VERSION/image-set-config.yaml \
-    docker://$TARGET_REGISTRY/cp4ba-2302-if001 \
+    docker://$TARGET_REGISTRY/$LOCATIONX \
     --dest-skip-tls \
     --max-per-registry=6 \
     | tee mirror_${i}.log

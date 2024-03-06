@@ -25,3 +25,4 @@ export CLUSTER_URL=""
 export INSTALLTYPE="" # cp4ba or helm
 export IBMPAKVERSION=""
 export IBMPAK_HOME="" # e.g. /root/2302
+export LOCATIONX="" # Where in the private registry you want to mirror images e.g. cp4ba-2302-if001
