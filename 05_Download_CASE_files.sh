@@ -12,6 +12,8 @@
 echo "#### 1. Connect your host to the internet and disconnect it from the local air-gapped network."
 # Nothing to script
 
+su - odmlob1
+
 if [ ${INSTALLTYPE} == "cp4ba" ]; then
   echo "#### 2a. View the current config of the IBM Catalog Management Plug-in (ibm-pak) v1.6 and later"
   oc ibm-pak config
