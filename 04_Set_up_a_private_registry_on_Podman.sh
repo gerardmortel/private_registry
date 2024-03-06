@@ -29,6 +29,7 @@ echo "#### Extra: Make registry directory to hold images, auth to hold credentia
 # mkdir -p /opt/registry/{auth,certs,data}
 rm -rf /{auth,certs,data}
 mkdir -p /{auth,certs,data}
+mkdir -p /run/user/1000/containers
 
 echo "#### Extra: Use the htpasswd utility to generate a file containing the credentials for accessing the registry"
 htpasswd -bBc /auth/htpasswd ${PRIVATE_REGISTRY_USERNAME} ${PRIVATE_REGISTRY_PASSWORD}
@@ -50,11 +51,16 @@ groupadd odmlob1
 useradd -g odmlob1 odmlob1
 echo -e 'Bpmr0cks\nBpmr0cks' | passwd odmlob1
 chown -R odmlob1:odmlob1 /auth
-chown -R odmlob1:odmlob1/certs
-chown -R odmlob1:odmlob1/data
+chown -R odmlob1:odmlob1 /certs
+chown -R odmlob1:odmlob1 /data
+chown -R odmlob1:odmlob1 /run/user/1000
+
+echo "#### Set XDG_RUNTIME_DIR and REGISTRY_AUTH_FILE for non-root user"
+echo 'XDG_RUNTIME_DIR=/run/user/${UID}' >> /home/odmlob1/.bashrc
+echo 'REGISTRY_AUTH_FILE=${XDG_RUNTIME_DIR}/containers/auth.json' >> /home/odmlob1/.bashrc
 
 echo "#### Extra: Login to docker to create /run/user/$UID/containers/auth.json"
-su odmlob1 -c "podman login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} docker.io"
+su - odmlob1 -c "podman login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} docker.io"
 
 echo "#### Extra: Run the registry container.  Note: On RHEL 9.2, needed to put all directories off of root "/".  Could not use /opt/registry"
 su - odmlob1 -c 'podman run --name registry -p 5000:5000 -v /data:/var/lib/registry:z -v /auth:/auth:z -v /certs:/certs:z -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key -e REGISTRY_AUTH=htpasswd -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" -e "REGISTRY_COMPATIBILITY_SCHEMA1_ENABLED=true" -d docker.io/library/registry:latest'
