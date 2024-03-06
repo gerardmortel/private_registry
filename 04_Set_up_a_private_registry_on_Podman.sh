@@ -45,42 +45,38 @@ rm -f /etc/pki/ca-trust/source/anchors/$HOSTNAME.crt
 cp /certs/domain.crt /etc/pki/ca-trust/source/anchors/$HOSTNAME.crt
 update-ca-trust
 
-echo "#### Extra: Login to docker to create /run/user/0/containers/auth.json"
-podman login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} docker.io
+echo "#### Create a user, group, password and set directory ownership"
+groupadd odmlob1
+useradd -g odmlob1 odmlob1
+echo -e 'Bpmr0cks\nBpmr0cks' | passwd odmlob1
+chown -R odmlob1:odmlob1 /auth
+chown -R odmlob1:odmlob1/certs
+chown -R odmlob1:odmlob1/data
+
+echo "#### Extra: Login to docker to create /run/user/$UID/containers/auth.json"
+su odmlob1 -c "podman login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} docker.io"
 
 echo "#### Extra: Run the registry container.  Note: On RHEL 9.2, needed to put all directories off of root "/".  Could not use /opt/registry"
-podman run --name registry \
--p 5000:5000 \
--v /data:/var/lib/registry:z \
--v /auth:/auth:z \
--v /certs:/certs:z \
--e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
--e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
--e REGISTRY_AUTH=htpasswd \
--e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
--e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
--e "REGISTRY_COMPATIBILITY_SCHEMA1_ENABLED=true" \
--d \
-docker.io/library/registry:latest
+su - odmlob1 -c 'podman run --name registry -p 5000:5000 -v /data:/var/lib/registry:z -v /auth:/auth:z -v /certs:/certs:z -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key -e REGISTRY_AUTH=htpasswd -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" -e "REGISTRY_COMPATIBILITY_SCHEMA1_ENABLED=true" -d docker.io/library/registry:latest'
 
 echo "#### Extra: Test it.  Login to your private registry, pull an image, tag it and push it to the private registry."
-podman pull ubuntu
-podman tag ubuntu $HOSTNAME:5000/ubuntu
-podman login -u ${PRIVATE_REGISTRY_USERNAME} -p ${PRIVATE_REGISTRY_PASSWORD} $HOSTNAME:5000
-podman push $HOSTNAME:5000/ubuntu
+su - odmlob1 -c 'podman pull ubuntu'
+su - odmlob1 -c "podman tag ubuntu $HOSTNAME:5000/ubuntu"
+su - odmlob1 -c "podman login -u ${PRIVATE_REGISTRY_USERNAME} -p ${PRIVATE_REGISTRY_PASSWORD} $HOSTNAME:5000"
+su - odmlob1 -c "podman push $HOSTNAME:5000/ubuntu"
 
 echo "#### Extra: If you installed jq (yum install -q jq), display the repositories nicely"
-curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/_catalog?n=1000| grep repositories | jq
+su - odmlob1 -c "curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/_catalog?n=1000| grep repositories | jq"
 
-IMAGE="ubuntu"
+export IMAGE="ubuntu"
 echo "#### Extra: List tags for a image ${IMAGE}"
-curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/${IMAGE}/tags/list | grep name | jq
+su - odmlob1 -c "curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/${IMAGE}/tags/list | grep name | jq"
 
-IMAGE="cpopen/ibm-common-service-operator-bundle"
-curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/${IMAGE}/tags/list | grep name | jq
+export IMAGE="cpopen/ibm-common-service-operator-bundle"
+su - odmlob1 -c "curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/${IMAGE}/tags/list | grep name | jq"
 
-IMAGE="cpopen/ibm-cert-manager-operator-bundle"
-curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/${IMAGE}/tags/list | grep name | jq
+export IMAGE="cpopen/ibm-cert-manager-operator-bundle"
+su - odmlob1 -c "curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://${HOSTNAME}:5000/v2/${IMAGE}/tags/list | grep name | jq"
 
 # If you did not install jq, list the repositories
 # curl -ik --user ${PRIVATE_REGISTRY_USERNAME}:${PRIVATE_REGISTRY_PASSWORD} https://$HOSTNAME:5000/v2/_catalog
