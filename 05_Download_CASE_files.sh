@@ -12,8 +12,6 @@
 echo "#### 1. Connect your host to the internet and disconnect it from the local air-gapped network."
 # Nothing to script
 
-su - odmlob1
-
 if [ ${INSTALLTYPE} == "cp4ba" ]; then
   echo "#### 2a. View the current config of the IBM Catalog Management Plug-in (ibm-pak) v1.6 and later"
   oc ibm-pak config
@@ -48,7 +46,7 @@ if [ ${INSTALLTYPE} == "cp4ba" ]; then
   echo "#### 2f. Run the following command to set the environment variable IBMPAK_HOME=$IBMPAK_HOME"
 
   echo "#### 2g. Download of the CASE files for ${INSTALLTYPE}"
-  oc ibm-pak get -c file:///root/private_registry-main/cp4ba-case-to-be-mirrored.txt # CP4BA
+  oc ibm-pak get -c file://$HOME/private_registry-main/cp4ba-case-to-be-mirrored.txt # CP4BA
 
   echo "#### 2h. List the versions of all the downloaded CASE files."
   oc ibm-pak list --downloaded
@@ -62,7 +60,7 @@ if [ ${INSTALLTYPE} == "cp4ba" ]; then
       break
     else
       echo "#### Extra: 2h. cp4ba-case-to-be-mirrored.txt download FAILED, trying again."
-      oc ibm-pak get -c file:///root/private_registry-main/cp4ba-case-to-be-mirrored.txt
+      oc ibm-pak get -c file://$HOME/private_registry-main/cp4ba-case-to-be-mirrored.txt
     fi
   done
 
@@ -82,6 +80,6 @@ else # Helm install, not CP4BA install
   
   echo "#### 5. Download of the CASE files for ${INSTALLTYPE}"
   oc ibm-pak get $CASE_NAME --version $CASE_VERSION
-  tree ~/.ibm-pak/data/cases/$CASE_NAME/$CASE_VERSION
+  tree $IBMPAK_HOME/.ibm-pak/data/cases/$CASE_NAME/$CASE_VERSION
 
 fi
